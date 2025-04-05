@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import InteractiveImage from '../components/InteractiveImage.jsx';
+import UsageNotes from '../components/ui/UsageNotes';
 
 const schema = {
   "@context": "https://schema.org",
@@ -22,6 +23,7 @@ const schema = {
 <Layout title="imgStyler - Online Image Editor & Styler">
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   <div class="p-6">
+    <UsageNotes client:visible />
     <InteractiveImage client:load />
   </div>
   <div class="px-4">
