@@ -1,22 +1,94 @@
+---
+import Header from "../components/ui/Header"
+import '../styles/global.css';
+
+export interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+}
+const { title = 'imgStyler', description = 'Free online image editor to crop, resize, apply filters, adjust brightness, contrast, saturation, and export images.', image = "/imgStyler_preview.png" } = Astro.props;
+
+const canonicalUrl = Astro.url.href;
+const absoluteImageUrl = new URL(image, Astro.url.origin).href;
+const imageAlt = `Preview image for imgStyler`;
+
+const darkModeScript = `
+	(function() {
+		const storedPreference = localStorage.getItem('isDarkMode');
+		const isDarkMode = storedPreference ? JSON.parse(storedPreference) : true;
+		document.documentElement.classList.toggle('dark', isDarkMode);
+	})();)
+`;
+
+const umamiScriptUrl = import.meta.env.UMAMI_SCRIPT_URL;
+const umamiWebsiteId = import.meta.env.UMAMI_WEBSITE_ID;
+const enableAnalytics = umamiScriptUrl && umamiWebsiteId;
+---
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content={description} />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+
+		<title>{title}</title>
+
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:site_name" content="imgStyler" />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:image" content={absoluteImageUrl} />
+		<meta property="og:image:alt" content={imageAlt} />
+		
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:url" content={canonicalUrl} />
+		<meta name="twitter:image" content={absoluteImageUrl} />
+		<meta name="twitter:image:alt" content={imageAlt} />
+		<meta name="twitter:creator" content="@Dev4PGH">
+
+		<script is:inline define:vars={{ darkModeScript }} dangerouslySetInnerHTML={{ __html: darkModeScript }} />
+		{enableAnalytics && (
+			<script defer src={umamiScriptUrl} data-website-id={umamiWebsiteId}></script>
+		)}
 	</head>
-	<body>
-		<slot />
+	<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+		<Header client:idle />
+		<main>
+			<slot />
+		</main>
+		<footer class="static-footer p-6 text-center mt-12 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
+			<nav class="space-x-4 md:space-x-6 mb-4">
+				<a href="/" class="hover:underline dark:text-gray-300 text-gray-700">Home</a>
+				<a href="/features" class="hover:underline dark:text-gray-300 text-gray-700">Features</a>
+				<a href="/about" class="hover:underline dark:text-gray-300 text-gray-700">About</a>
+				<a href="/contact" class="hover:underline dark:text-gray-300 text-gray-700">Contact</a>
+				<a
+					href="https://github.com/dev4pgh/imgStyler-astro"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="hover:underline dark:text-gray-300 text-gray-700"
+				>
+					GitHub
+				</a>
+			</nav>
+			<p class="mb-4">&copy; {new Date().getFullYear()} Dev4PGH. All rights reserved.</p>
+			<p class="text-sm">
+				Developed by <a
+					href="https://dev4pgh.com"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="underline hover:text-gray-900 dark:hover:text-gray-100"
+				>Dev4PGH LLC</a>.
+			</p>
+		</footer>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+const contactEmail = "dev4pgh@gmail.com";
+---
+<Layout title="Contact Us - imgStyler" description="Get in touch with imgStyler for support or feedback.">
+  <div class="p-6 max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-4">Contact Us</h1>
+    <p class="mb-6">
+      Have questions, feedback, or need support? We'd love to hear from you!
+    </p>
+    <p>
+      The best way to reach us regarding imgStyler is via email:
+    </p>
+    <a
+      href={`mailto:${contactEmail}`}
+      class="inline-block mt-2 text-lg text-blue-600 dark:text-blue-400 hover:underline font-semibold break-all"
+    >
+      {contactEmail}
+    </a>
+    <p class="mt-8">
+        imgStyler is developed by Dev4PGH LLC. You can learn more about the developer at their website:
+        <a
+          href="https://dev4pgh.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-lg font-bold text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          Dev4PGH.com
+        </a>
+      </p>
+    </div>
+</Layout>

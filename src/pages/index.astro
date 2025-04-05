@@ -1,11 +1,59 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import InteractiveImage from '../components/InteractiveImage.jsx';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "imgStyler",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "ImageEditor",
+  "operatingSystem": "Any (Web Browser)",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "A free, private, browser-based online image editor for cropping, resizing, filtering, and adjusting images.",
+  "url": Astro.url.href,
+  "screenshot": new URL('/imgStyler_preview.png', Astro.url.origin).href
+};
 ---
-
-<Layout>
-	<Welcome />
+<Layout title="imgStyler - Online Image Editor & Styler">
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <div class="p-6">
+    <InteractiveImage client:load />
+  </div>
+  <div class="px-4">
+    <div class="mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 space-y-6 max-w-6xl">
+      <div class="text-center">
+        <h2 class="text-4xl font-extrabold text-gray-900 dark:text-gray-100">imgStyler</h2>
+        <p class="mt-2 text-lg text-gray-700 dark:text-gray-300">A Simple, Privacy-Friendly Image Editor. No login required!</p>
+      </div>
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+          Style with <strong class="text-blue-500 dark:text-blue-400">Filters & Adjustments</strong>
+        </h3>
+        <p class="text-gray-700 dark:text-gray-300 mt-1">
+          Enhance your images quickly with creative <strong class="text-blue-500 dark:text-blue-400">filters</strong> (like Vintage or Sketch) and fine-tune details using <strong class="text-blue-500 dark:text-blue-400">adjustments</strong> for brightness, contrast, saturation, sharpness, and color tuning.
+        </p>
+      </div>
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+          Completely <strong class="text-blue-500 dark:text-blue-400">Local & Private</strong>
+        </h3>
+        <p class="text-gray-700 dark:text-gray-300 mt-1">
+          All editing happens right in your browser—<em>no files are uploaded</em>. Your images remain completely private.
+        </p>
+      </div>
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+          <strong class="text-blue-500 dark:text-blue-400">Export or Convert</strong> Easily
+        </h3>
+        <p class="text-gray-700 dark:text-gray-300 mt-1">
+          Convert your images between formats like <strong class="text-blue-500 dark:text-blue-400">PNG, JPEG, WebP, and TIFF</strong>. Just load an image, select your desired format (adjust quality or resize if needed), and click the save button.
+        </p>
+      </div>
+    </div>
+  </div>
 </Layout>
