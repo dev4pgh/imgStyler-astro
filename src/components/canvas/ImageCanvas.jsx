@@ -18,6 +18,7 @@ const ImageCanvas = forwardRef(({
         overlayProps,
         handleProps,
         isInteracting,
+        isResizing,
     } = useInteractiveCrop({
         containerRef,
         canvasWidth: canvasWidth,
@@ -110,6 +111,37 @@ const ImageCanvas = forwardRef(({
                 <div
                     {...handleProps}
                 ></div>
+                {isResizing && lockAspectRatio && (
+                    <svg
+                        width="100%"
+                        height="100%"
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            pointerEvents: 'none'
+                        }}
+                    >
+                        <line
+                            x1="0"
+                            y1="0"
+                            x2="100%"
+                            y2="100%"
+                            stroke="rgba(255, 255, 255, 0.85)"
+                            strokeWidth="3"
+                            strokeDasharray="4 4"
+                        />
+                        <line
+                            x1="0"
+                            y1="0"
+                            x2="100%"
+                            y2="100%"
+                            stroke="rgb(59, 130, 246)"
+                            strokeWidth="2"
+                            strokeDasharray="4 4"
+                        />
+                    </svg>
+                )}
             </div>
         </div>
     );

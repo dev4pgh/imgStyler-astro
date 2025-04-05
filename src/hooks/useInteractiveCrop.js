@@ -301,5 +301,6 @@ export function useInteractiveCrop({
     overlayProps,
     handleProps,
     isInteracting: isDragging || isResizing,
+    isResizing,
   };
 }
