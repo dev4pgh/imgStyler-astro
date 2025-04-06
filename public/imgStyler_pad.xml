@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XML_DIZ_INFO>
+  <MASTER_PAD_VERSION_INFO>
+    <MASTER_PAD_VERSION>4.0</MASTER_PAD_VERSION>
+    <MASTER_PAD_EDITOR>ChatGPT</MASTER_PAD_EDITOR>
+  </MASTER_PAD_VERSION_INFO>
+
+  <Company_Info>
+    <Company_Name>Dev4PGH LLC</Company_Name>
+    <Address/>
+    <City>Pittsburgh</City>
+    <State_Province>PA</State_Province>
+    <Zip_Postal_Code>15235</Zip_Postal_Code>
+    <Country>USA</Country>
+    <Company_WebSite_URL>https://dev4pgh.com</Company_WebSite_URL>
+    <Contact_Info>
+      <Author_First_Name>J.</Author_First_Name>
+      <Author_Last_Name>Williams</Author_Last_Name>
+      <Contact_Email>dev4pgh@gmail.com</Contact_Email>
+    </Contact_Info>
+  </Company_Info>
+
+  <Program_Info>
+    <Program_Name>imgStyler</Program_Name>
+    <Program_Version>1.0.0</Program_Version>
+    <Program_Release_Month>04</Program_Release_Month>
+    <Program_Release_Day>05</Program_Release_Day>
+    <Program_Release_Year>2025</Program_Release_Year>
+    <Program_Type>Freeware</Program_Type>
+    <Program_Cost_Dollars>0</Program_Cost_Dollars>
+    <Program_Cost_Other_Code/>
+    <Program_Install_Support>No Install Required</Program_Install_Support>
+    <Program_OS_Support>Web-based</Program_OS_Support>
+    <Program_Language>English</Program_Language>
+    <Program_Category>Graphic Apps::Editors</Program_Category>
+    <Program_System_Requirements>Web browser (Chrome, Firefox, Edge, Safari)</Program_System_Requirements>
+    <Program_Specific_Category>Online Image Editor</Program_Specific_Category>
+    <Program_File_Size_Bytes>0</Program_File_Size_Bytes>
+    <Program_File_Size_K>0</Program_File_Size_K>
+    <Program_File_Size_MB>0</Program_File_Size_MB>
+    <Expire_Info>No limitations</Expire_Info>
+    <Expire_Count>0</Expire_Count>
+    <Expire_Based_On/>
+    <Program_Change_Info>Initial release with cropping, filters, adjustments, export, and privacy-focused local processing.</Program_Change_Info>
+    <Program_ScreenShot_URL>https://imgstyler.app/imgStyler_preview.png</Program_ScreenShot_URL>
+    <Program_Icon_URL>https://imgstyler.app/android-chrome-192x192.png</Program_Icon_URL>
+    <Program_Info_URL>https://imgstyler.app</Program_Info_URL>
+    <Program_Order_URL>https://imgstyler.app</Program_Order_URL>
+    <Program_Download_URLs>
+      <Primary_Download_URL>https://imgstyler.app</Primary_Download_URL>
+    </Program_Download_URLs>
+  </Program_Info>
+
+  <Descriptions>
+    <English>
+      <Char_Desc_45>imgStyler Free online image editor</Char_Desc_45>
+      <Char_Desc_80>imgStyler: a free image editor with filters, crop tools, and exporting.</Char_Desc_80>
+      <Char_Desc_250>imgStyler is a free, browser-based image editor offering editing tools like cropping, filters, and adjustments (brightness, contrast, etc.). Export images in PNG, JPEG, WebP, or TIFF formats—all processing is done locally in your browser.</Char_Desc_250>
+      <Char_Desc_450>imgStyler is a fast, intuitive image editor built for the web. No logins or uploads required—just drag and drop your image, apply filters or fine-tune brightness, contrast, sharpness, and more. Crop with custom or preset social media ratios, resize during export, and save in popular formats like PNG, JPEG, WebP, or TIFF. imgStyler runs completely in your browser with no server-side processing—your files stay private.</Char_Desc_450>
+    </English>
+  </Descriptions>
+
+  <Permissions>
+    <Distribution_Permissions>imgStyler may be freely linked and listed in directories and app catalogs.</Distribution_Permissions>
+    <EULA>This software is provided "as-is" under the MIT License. No warranties. All rights reserved by Dev4PGH LLC.</EULA>
+  </Permissions>
+</XML_DIZ_INFO>
