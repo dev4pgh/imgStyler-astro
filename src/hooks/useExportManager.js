@@ -37,6 +37,7 @@ export function useExportManager(
       adjustments,
       rounding,
       originalFilename,
+      overlays,
     }) => {
       if (!image || !crop) {
         setExportError("Cannot export: Image or crop data missing.");
@@ -89,6 +90,7 @@ export function useExportManager(
         originalFilename,
         outputWidth: finalExportWidth,
         outputHeight: finalExportHeight,
+        overlays,
       };
 
       try {

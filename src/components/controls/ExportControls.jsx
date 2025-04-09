@@ -8,6 +8,7 @@ const ExportControls = () => {
         setFormat, setQuality, setLossless,
         startExport,
         originalImage, crop, selectedFilter, adjustments, cropRounding, file, hasImage,
+        overlays,
         enableResizing, setEnableResizing,
         targetWidth, setTargetWidth,
         targetHeight, setTargetHeight,
@@ -72,6 +73,7 @@ const ExportControls = () => {
             filter: selectedFilter,
             adjustments,
             rounding: cropRounding,
+            overlays,
             originalFilename: file.name,
         });
     };

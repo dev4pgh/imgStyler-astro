@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const DEFAULT_SIZE = { width: 0, height: 0, scale: 1 };
 
@@ -21,53 +21,43 @@ export function useCanvasDisplaySize(containerRef, crop, imageObject) {
 
     observer.observe(container);
     setContainerWidth(container.clientWidth);
+
     return () => {
-      if (container) {
-        observer.unobserve(container);
-      }
       observer.disconnect();
     };
   }, [containerRef]);
 
   useEffect(() => {
-    if (!crop || !imageObject || containerWidth <= 0) {
+    if (!crop || !imageObject || containerWidth <= 0 || !containerRef.current) {
       setDisplaySize(DEFAULT_SIZE);
       return;
     }
 
-    const cropWidth = crop.width || 1;
-    const cropHeight = crop.height || 1;
-    const imageWidth = imageObject.width || imageObject.naturalWidth || 1;
-    const imageHeight = imageObject.height || imageObject.naturalHeight || 1;
+    const cropWidth = crop.width;
+    const cropHeight = crop.height;
 
-    let cropAspectRatio = cropWidth / cropHeight;
-    if (
-      isNaN(cropAspectRatio) ||
-      !isFinite(cropAspectRatio) ||
-      cropAspectRatio <= 0
-    ) {
-      cropAspectRatio = imageWidth / imageHeight;
-      if (
-        isNaN(cropAspectRatio) ||
-        !isFinite(cropAspectRatio) ||
-        cropAspectRatio <= 0
-      ) {
-        cropAspectRatio = 1;
-      }
+    if (cropWidth <= 0 || cropHeight <= 0) {
+      console.warn("useCanvasDisplaySize: Invalid crop dimensions", crop);
+      setDisplaySize(DEFAULT_SIZE);
+      return;
     }
+
+    const cropAspectRatio = cropWidth / cropHeight;
 
     let targetWidth = containerWidth;
     let targetHeight = targetWidth / cropAspectRatio;
+
     targetWidth = Math.max(1, Math.round(targetWidth));
     targetHeight = Math.max(1, Math.round(targetHeight));
+
     const scale = targetWidth / cropWidth;
 
     setDisplaySize({
       width: targetWidth,
       height: targetHeight,
-      scale: isFinite(scale) ? scale : 1,
+      scale: Number.isFinite(scale) && scale > 0 ? scale : 1,
     });
-  }, [containerWidth, crop, imageObject]);
+  }, [containerWidth, crop, imageObject, containerRef]);
 
   return displaySize;
 }

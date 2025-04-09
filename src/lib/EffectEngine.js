@@ -1,3 +1,6 @@
+import * as UTIF from "utif";
+import { applyAllOverlays } from "./overlays/blurUtils";
+
 export const filterMap = {
   None: "",
   Grayscale: "grayscale(1)",
@@ -20,9 +23,17 @@ export const adjustmentMap = {
 const applySketchEffect = (ctx, image, canvas) => {
   const width = canvas.width;
   const height = canvas.height;
-  ctx.drawImage(image, 0, 0, width, height);
-  const imageData = ctx.getImageData(0, 0, width, height);
-  const { data } = imageData;
+  if (width <= 0 || height <= 0) return;
+
+  const tempCanvas = document.createElement("canvas");
+  tempCanvas.width = width;
+  tempCanvas.height = height;
+  const tempCtx = tempCanvas.getContext("2d");
+  if (!tempCtx) return;
+  tempCtx.drawImage(image, 0, 0, width, height);
+
+  const imageData = tempCtx.getImageData(0, 0, width, height);
+  const data = imageData.data;
   const grayscale = new Uint8ClampedArray(width * height);
   for (let i = 0; i < data.length; i += 4) {
     grayscale[i / 4] =
@@ -31,6 +42,7 @@ const applySketchEffect = (ctx, image, canvas) => {
   const sobelX = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
   const sobelY = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
   const output = new Uint8ClampedArray(data.length);
+
   for (let y = 1; y < height - 1; y++) {
     for (let x = 1; x < width - 1; x++) {
       let gx = 0;
@@ -53,52 +65,51 @@ const applySketchEffect = (ctx, image, canvas) => {
       output[outIdx + 3] = 255;
     }
   }
-  const result = new ImageData(output, width, height);
-  ctx.putImageData(result, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.putImageData(new ImageData(output, width, height), 0, 0);
 };
 
 function _calculateDrawRects(image, crop, targetWidth, targetHeight) {
   let sx = 0,
     sy = 0,
-    sWidth = image.width,
-    sHeight = image.height;
+    sWidth = 1,
+    sHeight = 1;
   let dx = 0,
     dy = 0,
     dWidth = targetWidth,
     dHeight = targetHeight;
 
+  const imageWidth = image.naturalWidth || image.width || 1;
+  const imageHeight = image.naturalHeight || image.height || 1;
+
   if (crop && crop.width > 0 && crop.height > 0) {
     sx = Math.max(0, crop.x);
     sy = Math.max(0, crop.y);
-    sWidth = Math.min(crop.width, image.width - sx);
-    sHeight = Math.min(crop.height, image.height - sy);
-
-    if (sWidth <= 0 || sHeight <= 0) {
-      sx = 0;
-      sy = 0;
-      sWidth = image.width;
-      sHeight = image.height;
-    }
-    dx = 0;
-    dy = 0;
-    dWidth = targetWidth;
-    dHeight = targetHeight;
+    sWidth = Math.max(1, Math.min(crop.width, imageWidth - sx));
+    sHeight = Math.max(1, Math.min(crop.height, imageHeight - sy));
   } else {
     sx = 0;
     sy = 0;
-    sWidth = image.width;
-    sHeight = image.height;
-    dx = 0;
-    dy = 0;
-    dWidth = targetWidth;
-    dHeight = targetHeight;
+    sWidth = imageWidth;
+    sHeight = imageHeight;
   }
+
+  dx = 0;
+  dy = 0;
+  dWidth = targetWidth;
+  dHeight = targetHeight;
+
   return { sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight };
 }
 
 function _applyRoundingClip(ctx, x, y, width, height, radiusPercent) {
-  if (!radiusPercent || radiusPercent <= 0) return false;
-  const cornerRadius = Math.min(width, height) * (radiusPercent / 100.0);
+  if (!radiusPercent || radiusPercent <= 0 || width <= 0 || height <= 0)
+    return false;
+
+  const clampedPercent = Math.max(0, Math.min(50, radiusPercent));
+  const cornerRadius =
+    Math.min(width / 2, height / 2) * (clampedPercent / 50.0);
+
   if (cornerRadius <= 0) return false;
 
   ctx.save();
@@ -114,75 +125,54 @@ function _applyRoundingClip(ctx, x, y, width, height, radiusPercent) {
 }
 
 export const applySharpness = (ctx, canvas, sharpnessValue) => {
-  if (sharpnessValue >= 0) {
-    const weight = sharpnessValue / 100;
+  if (!sharpnessValue || sharpnessValue === 0) return;
+
+  const width = canvas.width;
+  const height = canvas.height;
+  if (width <= 0 || height <= 0) return;
+
+  if (sharpnessValue > 0) {
+    const weight = sharpnessValue / 100.0;
     const kCenter = 1 + 4 * weight;
-    const width = canvas.width;
-    const height = canvas.height;
+    const kCross = -weight;
+
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
-    const output = new Uint8ClampedArray(data.length);
+    const copy = new Uint8ClampedArray(data);
     const w4 = width * 4;
 
-    for (let y = 1, rowOffset = w4; y < height - 1; y++, rowOffset += w4) {
+    for (let y = 1; y < height - 1; y++) {
       for (let x = 1; x < width - 1; x++) {
-        const i = rowOffset + x * 4;
-        const i_tl = i - w4 - 4;
+        const i = (y * width + x) * 4;
         const i_tc = i - w4;
-        const i_tr = i - w4 + 4;
         const i_ml = i - 4;
-        const i_m = i;
         const i_mr = i + 4;
-        const i_bl = i + w4 - 4;
         const i_bc = i + w4;
-        const i_br = i + w4 + 4;
 
-        let r =
-          0 * data[i_tl] +
-          -weight * data[i_tc] +
-          0 * data[i_tr] +
-          -weight * data[i_ml] +
-          kCenter * data[i_m] +
-          -weight * data[i_mr] +
-          0 * data[i_bl] +
-          -weight * data[i_bc] +
-          0 * data[i_br];
-        let g =
-          0 * data[i_tl + 1] +
-          -weight * data[i_tc + 1] +
-          0 * data[i_tr + 1] +
-          -weight * data[i_ml + 1] +
-          kCenter * data[i_m + 1] +
-          -weight * data[i_mr + 1] +
-          0 * data[i_bl + 1] +
-          -weight * data[i_bc + 1] +
-          0 * data[i_br + 1];
-        let b =
-          0 * data[i_tl + 2] +
-          -weight * data[i_tc + 2] +
-          0 * data[i_tr + 2] +
-          -weight * data[i_ml + 2] +
-          kCenter * data[i_m + 2] +
-          -weight * data[i_mr + 2] +
-          0 * data[i_bl + 2] +
-          -weight * data[i_bc + 2] +
-          0 * data[i_br + 2];
+        for (let channel = 0; channel < 3; channel++) {
+          const result =
+            kCenter * copy[i + channel] +
+            kCross * copy[i_tc + channel] +
+            kCross * copy[i_ml + channel] +
+            kCross * copy[i_mr + channel] +
+            kCross * copy[i_bc + channel];
 
-        output[i] = Math.min(255, Math.max(0, r));
-        output[i + 1] = Math.min(255, Math.max(0, g));
-        output[i + 2] = Math.min(255, Math.max(0, b));
-        output[i + 3] = data[i + 3];
+          data[i + channel] = Math.min(255, Math.max(0, result));
+        }
       }
     }
-    ctx.putImageData(new ImageData(output, width, height), 0, 0);
+    ctx.putImageData(imageData, 0, 0);
   } else {
-    const blurRadius = Math.abs(sharpnessValue) * 0.025;
+    const blurRadius = Math.abs(sharpnessValue) * 0.03;
+
     const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = canvas.width;
-    tempCanvas.height = canvas.height;
+    tempCanvas.width = width;
+    tempCanvas.height = height;
     const tempCtx = tempCanvas.getContext("2d");
+    if (!tempCtx) return;
+
     tempCtx.drawImage(canvas, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, width, height);
     ctx.filter = `blur(${blurRadius}px)`;
     ctx.drawImage(tempCanvas, 0, 0);
     ctx.filter = "none";
@@ -190,21 +180,24 @@ export const applySharpness = (ctx, canvas, sharpnessValue) => {
 };
 
 const applyTemperatureAndTint = (ctx, canvas, temperature, tint) => {
+  if ((!temperature || temperature === 0) && (!tint || tint === 0)) return;
   const width = canvas.width;
   const height = canvas.height;
+  if (width <= 0 || height <= 0) return;
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
-  const t = temperature;
-  const ti = tint;
+  const t = temperature * 0.3;
+  const ti = tint * 0.3;
 
   for (let i = 0, len = data.length; i < len; i += 4) {
-    let r = data[i] + t;
+    let r = data[i];
+    let g = data[i + 1];
+    let b = data[i + 2];
+    r += t;
+    b -= t;
+    g += ti;
     data[i] = r < 0 ? 0 : r > 255 ? 255 : r;
-
-    let g = data[i + 1] + ti;
     data[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
-
-    let b = data[i + 2] - t;
     data[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
   }
   ctx.putImageData(imageData, 0, 0);
@@ -217,16 +210,27 @@ export const applyAllEffects = (
   filter,
   adjustments,
   crop = null,
-  cropRounding = 0
+  cropRounding = 0,
+  overlays = []
 ) => {
   const targetWidth = canvas.width;
   const targetHeight = canvas.height;
-  ctx.clearRect(0, 0, targetWidth, targetHeight);
+  if (targetWidth <= 0 || targetHeight <= 0) {
+    console.error("applyAllEffects: Target canvas dimensions are invalid.");
+    return;
+  }
 
+  ctx.clearRect(0, 0, targetWidth, targetHeight);
   const { sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight } =
     _calculateDrawRects(image, crop, targetWidth, targetHeight);
 
   if (sWidth <= 0 || sHeight <= 0 || dWidth <= 0 || dHeight <= 0) {
+    console.error("applyAllEffects: Calculated draw dimensions are invalid.", {
+      sWidth,
+      sHeight,
+      dWidth,
+      dHeight,
+    });
     return;
   }
 
@@ -247,28 +251,38 @@ export const applyAllEffects = (
   tempEffectCanvas.width = targetWidth;
   tempEffectCanvas.height = targetHeight;
   const tempEffectCtx = tempEffectCanvas.getContext("2d");
+  if (!tempEffectCtx) {
+    console.error("Failed to get context for temp effect canvas.");
+    return;
+  }
+
   tempEffectCtx.drawImage(canvas, 0, 0);
 
-  ctx.clearRect(0, 0, targetWidth, targetHeight);
-
   if (filter === "Sketch") {
-    applySketchEffect(tempEffectCtx, tempEffectCanvas, tempEffectCanvas);
-    ctx.drawImage(tempEffectCanvas, 0, 0);
+    applySketchEffect(ctx, tempEffectCanvas, canvas);
+    tempEffectCtx.clearRect(0, 0, targetWidth, targetHeight);
+    tempEffectCtx.drawImage(canvas, 0, 0);
   } else {
     const cssFilters = [];
-    if (filterMap[filter]) {
+    if (filter && filterMap[filter]) {
       cssFilters.push(filterMap[filter]);
     }
-    if (adjustments.brightness !== undefined) {
+    if (
+      adjustments.brightness !== undefined &&
+      adjustments.brightness !== 100
+    ) {
       cssFilters.push(adjustmentMap.brightness(adjustments.brightness));
     }
-    if (adjustments.contrast !== undefined) {
+    if (adjustments.contrast !== undefined && adjustments.contrast !== 100) {
       cssFilters.push(adjustmentMap.contrast(adjustments.contrast));
     }
-    if (adjustments.saturation !== undefined) {
+    if (
+      adjustments.saturation !== undefined &&
+      adjustments.saturation !== 100
+    ) {
       cssFilters.push(adjustmentMap.saturation(adjustments.saturation));
     }
-    if (adjustments.hue !== undefined) {
+    if (adjustments.hue !== undefined && adjustments.hue !== 0) {
       cssFilters.push(adjustmentMap.hue(adjustments.hue));
     }
 
@@ -277,6 +291,7 @@ export const applyAllEffects = (
       tempEffectCtx.drawImage(tempEffectCanvas, 0, 0);
       tempEffectCtx.filter = "none";
     }
+    ctx.clearRect(0, 0, targetWidth, targetHeight);
     ctx.drawImage(tempEffectCanvas, 0, 0);
   }
 
@@ -284,8 +299,8 @@ export const applyAllEffects = (
     applySharpness(ctx, canvas, adjustments.sharpness);
   }
   if (
-    (adjustments.temperature && adjustments.temperature !== 0) ||
-    (adjustments.tint && adjustments.tint !== 0)
+    (adjustments.temperature !== undefined && adjustments.temperature !== 0) ||
+    (adjustments.tint !== undefined && adjustments.tint !== 0)
   ) {
     applyTemperatureAndTint(
       ctx,
@@ -293,5 +308,32 @@ export const applyAllEffects = (
       adjustments.temperature || 0,
       adjustments.tint || 0
     );
+  }
+
+  if (
+    overlays &&
+    overlays.length > 0 &&
+    crop &&
+    crop.width > 0 &&
+    crop.height > 0
+  ) {
+    const targetScaleX = targetWidth / crop.width;
+    const targetScaleY = targetHeight / crop.height;
+
+    if (
+      Number.isFinite(targetScaleX) &&
+      targetScaleX > 0 &&
+      Number.isFinite(targetScaleY) &&
+      targetScaleY > 0
+    ) {
+      const scaleFactors = { scaleX: targetScaleX, scaleY: targetScaleY };
+      applyAllOverlays(ctx, overlays, crop, scaleFactors);
+    } else {
+      console.warn("Invalid scale factors calculated for overlays, skipping.", {
+        targetScaleX,
+        targetScaleY,
+        crop,
+      });
+    }
   }
 };

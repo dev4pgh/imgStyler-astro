@@ -26,7 +26,6 @@ export function useInteractiveCrop({
           "Cannot initialize interactive crop: Canvas size unknown or invalid."
         );
         setInteractiveCrop(null);
-        onCropChange?.(null);
         return;
       }
 
@@ -46,21 +45,32 @@ export function useInteractiveCrop({
         initialY = (canvasHeight - initialHeight) / 2;
       }
 
+      initialWidth = Math.max(MIN_CROP_SIZE_DISPLAY, initialWidth);
+      initialHeight = Math.max(MIN_CROP_SIZE_DISPLAY, initialHeight);
+      initialWidth = Math.min(initialWidth, canvasWidth - initialX);
+      initialHeight = Math.min(initialHeight, canvasHeight - initialY);
+
       const initialCropData = {
         x: Math.round(initialX),
         y: Math.round(initialY),
-        width: Math.round(Math.max(MIN_CROP_SIZE_DISPLAY, initialWidth)),
-        height: Math.round(Math.max(MIN_CROP_SIZE_DISPLAY, initialHeight)),
+        width: Math.round(initialWidth),
+        height: Math.round(initialHeight),
       };
       setInteractiveCrop(initialCropData);
     } else {
-      setInteractiveCrop(null);
       setIsDragging(false);
       setIsResizing(false);
       setStartPos({ x: 0, y: 0 });
       setStartCropData(null);
     }
-  }, [isCropping, aspectRatio, canvasWidth, canvasHeight, disabled]);
+  }, [
+    isCropping,
+    aspectRatio,
+    lockAspectRatio,
+    canvasWidth,
+    canvasHeight,
+    disabled,
+  ]);
 
   const getMousePos = useCallback(
     (e) => {
@@ -246,41 +256,41 @@ export function useInteractiveCrop({
     handleInteractionEnd,
   ]);
 
-  const overlayStyle =
-    interactiveCrop && isCropping && !disabled
-      ? {
-          position: "absolute",
-          border: "2px solid rgb(59, 130, 246)",
-          cursor: isDragging ? "grabbing" : isResizing ? "nwse-resize" : "grab",
-          left: `${interactiveCrop.x}px`,
-          top: `${interactiveCrop.y}px`,
-          width: `${interactiveCrop.width}px`,
-          height: `${interactiveCrop.height}px`,
-          pointerEvents: "auto",
-          boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.5)",
-          boxSizing: "border-box",
-          borderRadius: `${cropRounding || 0}%`,
-          touchAction: "none",
-        }
-      : { display: "none" };
+  const showOverlay = isCropping && interactiveCrop;
 
-  const handleStyle =
-    interactiveCrop && isCropping && !disabled
-      ? {
-          position: "absolute",
-          width: `${HANDLE_SIZE}px`,
-          height: `${HANDLE_SIZE}px`,
-          background: "rgb(59, 130, 246)",
-          right: `-${HANDLE_SIZE / 2}px`,
-          bottom: `-${HANDLE_SIZE / 2}px`,
-          cursor: "nwse-resize",
-          borderRadius: "2px",
-          border: "1px solid white",
-          boxSizing: "border-box",
-          pointerEvents: "auto",
-          touchAction: "none",
-        }
-      : { display: "none" };
+  const overlayStyle = showOverlay
+    ? {
+        position: "absolute",
+        border: "2px solid rgb(59, 130, 246)",
+        cursor: isDragging ? "grabbing" : isResizing ? "nwse-resize" : "grab",
+        left: `${interactiveCrop.x}px`,
+        top: `${interactiveCrop.y}px`,
+        width: `${interactiveCrop.width}px`,
+        height: `${interactiveCrop.height}px`,
+        pointerEvents: "auto",
+        boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.5)",
+        boxSizing: "border-box",
+        borderRadius: `${cropRounding || 0}%`,
+        touchAction: "none",
+      }
+    : { display: "none" };
+
+  const handleStyle = showOverlay
+    ? {
+        position: "absolute",
+        width: `${HANDLE_SIZE}px`,
+        height: `${HANDLE_SIZE}px`,
+        background: "rgb(59, 130, 246)",
+        right: `-${HANDLE_SIZE / 2}px`,
+        bottom: `-${HANDLE_SIZE / 2}px`,
+        cursor: "nwse-resize",
+        borderRadius: "2px",
+        border: "1px solid white",
+        boxSizing: "border-box",
+        pointerEvents: "auto",
+        touchAction: "none",
+      }
+    : { display: "none" };
 
   const overlayProps = {
     style: overlayStyle,

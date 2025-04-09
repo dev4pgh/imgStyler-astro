@@ -15,6 +15,7 @@ import { applyAllEffects } from "./EffectEngine";
  * @param {string} options.originalFilename - The original filename for naming the export.
  * @param {number} options.outputWidth - The desired output width in pixels.
  * @param {number} options.outputHeight - The desired output height in pixels.
+ * @param {Array<object>} options.overlays - Array of overlay configuration objects.
  * @returns {Promise<void>} A promise that resolves when the download is initiated or rejects on error.
  */
 export async function exportImage({
@@ -29,6 +30,7 @@ export async function exportImage({
   originalFilename = "image.png",
   outputWidth,
   outputHeight,
+  overlays = [],
 }) {
   if (!image || !crop || crop.width <= 0 || crop.height <= 0) {
     console.error("Export failed: Invalid image or crop data.", {
@@ -56,7 +58,8 @@ export async function exportImage({
       filter,
       adjustments,
       crop,
-      rounding
+      rounding,
+      overlays
     );
   } catch (error) {
     console.error("Error applying effects during export:", error);

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CropPanel from "./CropPanel";
 import AdjustmentsPanel from "./AdjustmentsPanel";
 import FiltersPanel from "./FiltersPanel";
+import OverlaysPanel from "./OverlaysPanel";
 
 const Sidebar = () => {
     const [activeTab, setActiveTab] = useState("crop");
@@ -16,6 +17,8 @@ const Sidebar = () => {
                 return <AdjustmentsPanel />;
             case "filters":
                 return <FiltersPanel />;
+            case "overlays":
+                return <OverlaysPanel />;
             default:
                 return null;
         }
@@ -41,6 +44,12 @@ const Sidebar = () => {
                         onClick={() => setActiveTab("filters")}
                     >
                         Filters
+                    </button>
+                    <button
+                        className={`flex-1 py-2 text-center text-sm ${activeTab === "overlays" ? "border-b-2 border-blue-500 text-blue-500 font-medium" : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"}`}
+                        onClick={() => setActiveTab("overlays")}
+                    >
+                        Overlays
                     </button>
                 </div>
                 <div className="p-2 min-h-[100px]">

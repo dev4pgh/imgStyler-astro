@@ -56,22 +56,40 @@ export function useCroppingState(originalImage) {
         return;
       }
 
-      const deltaX_orig = currentInteractiveCrop.x / currentScale;
-      const deltaY_orig = currentInteractiveCrop.y / currentScale;
-      const newWidth_orig = currentInteractiveCrop.width / currentScale;
-      const newHeight_orig = currentInteractiveCrop.height / currentScale;
-
-      const finalX = cropSessionStartCrop.x + deltaX_orig;
-      const finalY = cropSessionStartCrop.y + deltaY_orig;
-      const finalWidth = newWidth_orig;
-      const finalHeight = newHeight_orig;
-
-      setCrop({
-        x: Math.round(Math.max(0, finalX)),
-        y: Math.round(Math.max(0, finalY)),
-        width: Math.round(Math.max(1, finalWidth)),
-        height: Math.round(Math.max(1, finalHeight)),
+      console.log("[useCroppingState.confirmCrop] Inputs:", {
+        currentInteractiveCrop,
+        currentScale,
+        cropSessionStartCrop,
       });
+
+      const finalX_offset_from_start_orig =
+        currentInteractiveCrop.x / currentScale;
+      const finalY_offset_from_start_orig =
+        currentInteractiveCrop.y / currentScale;
+
+      const finalX_orig =
+        cropSessionStartCrop.x + finalX_offset_from_start_orig;
+      const finalY_orig =
+        cropSessionStartCrop.y + finalY_offset_from_start_orig;
+
+      const finalWidth_orig = currentInteractiveCrop.width / currentScale;
+      const finalHeight_orig = currentInteractiveCrop.height / currentScale;
+
+      const newCrop = {
+        x: Math.round(Math.max(0, finalX_orig)),
+        y: Math.round(Math.max(0, finalY_orig)),
+        width: Math.round(Math.max(1, finalWidth_orig)),
+        height: Math.round(Math.max(1, finalHeight_orig)),
+      };
+
+      console.log("Calculated new crop (original coords):", newCrop);
+
+      console.log(
+        "[useCroppingState.confirmCrop] Calculated newCrop (original coords):",
+        newCrop
+      );
+      console.log("[useCroppingState.confirmCrop] About to call setCrop.");
+      setCrop(newCrop);
 
       setIsCropping(false);
       setCropSessionStartCrop(null);
