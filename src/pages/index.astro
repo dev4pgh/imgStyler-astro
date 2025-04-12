@@ -15,7 +15,7 @@ const schema = {
     "price": "0",
     "priceCurrency": "USD"
   },
-  "description": "A free, private, browser-based online image editor for cropping, resizing, filtering, and adjusting images.",
+  "description": "A free, private, browser-based online image editor for cropping, resizing, filtering, adjusting colors, and adding basic overlays.",
   "url": Astro.url.href,
   "screenshot": new URL('/imgStyler_preview.png', Astro.url.origin).href
 };
@@ -38,6 +38,14 @@ const schema = {
         </h3>
         <p class="text-gray-700 dark:text-gray-300 mt-1">
           Enhance your images quickly with creative <strong class="text-blue-500 dark:text-blue-400">filters</strong> (like Vintage or Sketch) and fine-tune details using <strong class="text-blue-500 dark:text-blue-400">adjustments</strong> for brightness, contrast, saturation, sharpness, and color tuning.
+        </p>
+      </div>
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+          Add <strong class="text-blue-500 dark:text-blue-400">Text & Blur Overlays</strong>
+        </h3>
+        <p class="text-gray-700 dark:text-gray-300 mt-1">
+            Easily place <strong class="text-blue-500 dark:text-blue-400">text overlays</strong> or <strong class="text-blue-500 dark:text-blue-400">blur regions</strong> directly onto your image. Use for quick notes, watermarks, memes, or protecting privacy by obscuring sensitive details like faces or license plates. Interactively position, resize, and style your overlays.
         </p>
       </div>
       <div>

@@ -5,6 +5,10 @@ import Layout from '../layouts/Layout.astro';
   <div class="p-6 max-w-6xl mx-auto">
     <h1 class="text-3xl font-bold mb-6 border-b pb-2 dark:border-gray-700">imgStyler Features</h1>
 
+    <p class="mb-6 text-base text-gray-700 dark:text-gray-300">
+      imgStyler provides essential image editing tools directly in your browser. It's designed to be fast, lightweight, and completely private, with no image uploads required.
+  </p>
+
     <section class="mb-8">
       <h2 class="text-2xl font-semibold mb-2">Cropping & Resizing</h2>
       <p class="mb-2">
@@ -46,6 +50,37 @@ import Layout from '../layouts/Layout.astro';
         <li>Invert, Polaroid, Sketch</li>
       </ul>
     </section>
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-2">Image Overlays</h2>
+      <p class="mb-3">
+          Add informative or protective elements directly on top of your image. Overlays can be interactively placed, moved, and resized.
+      </p>
+      <div class="space-y-3 ml-4">
+          <div>
+              <h3 class="text-lg font-medium mb-1">Text Overlays</h3>
+              <p class="mb-1 text-sm">Add notes, titles, watermarks, or captions easily.</p>
+              <ul class="list-disc list-inside space-y-1 ml-4 text-sm">
+                  <li>Draw text box to define area</li>
+                  <li>Edit text content directly</li>
+                  <li>Adjust font size</li>
+                  <li>Select font color using a color picker</li>
+                  <li>Choose from common web-safe font families (Arial, Verdana, Times New Roman, etc.)</li>
+                  <li>Set text alignment (Left, Center, Right) within the box</li>
+                  <li>Text wraps automatically within the defined box width</li>
+              </ul>
+          </div>
+          <div>
+              <h3 class="text-lg font-medium mb-1">Blur Overlays</h3>
+              <p class="mb-1 text-sm">Obscure sensitive information or create depth-of-field effects.</p>
+               <ul class="list-disc list-inside space-y-1 ml-4 text-sm">
+                  <li>Draw blur region interactively</li>
+                  <li>Adjust blur intensity (as a percentage relative to the blurred area size)</li>
+                  <li>Ideal for faces, license plates, or private details</li>
+              </ul>
+          </div>
+      </div>
+  </section>
 
     <section class="mb-8">
       <h2 class="text-2xl font-semibold mb-2">Flexible Export Options</h2>
