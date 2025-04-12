@@ -13,6 +13,7 @@ export function useOverlayDrawing({
     overlayInteractionState = { active: false },
     displayScale = 1,
     crop,
+    setLastInteractionEndTime,
   } = context || {};
 
   const [isDrawing, setIsDrawing] = useState(false);
@@ -82,11 +83,10 @@ export function useOverlayDrawing({
         const offsetY_from_crop_orig = finalDisplayRect.y / displayScale;
         const width_orig = finalDisplayRect.width / displayScale;
         const height_orig = finalDisplayRect.height / displayScale;
-
         const absoluteX_orig = crop.x + offsetX_from_crop_orig;
         const absoluteY_orig = crop.y + offsetY_from_crop_orig;
 
-        const newOverlay = {
+        const newOverlayBase = {
           id: `${overlayInteractionState.type}-${Date.now()}-${Math.random()
             .toString(36)
             .substring(2, 7)}`,
@@ -95,10 +95,34 @@ export function useOverlayDrawing({
           y: absoluteY_orig,
           width: width_orig,
           height: height_orig,
-          intensity: 5,
         };
+
+        let newOverlay;
+
+        if (overlayInteractionState.type === "text") {
+          newOverlay = {
+            ...newOverlayBase,
+            text: "Enter Text",
+            fontSize: 48,
+            color: "#FFFFFF",
+            fontFamily: "Arial",
+            textAlign: "left",
+          };
+        } else if (overlayInteractionState.type === "blur") {
+          newOverlay = {
+            ...newOverlayBase,
+            intensity: 5,
+          };
+        } else {
+          console.warn(
+            "Unhandled overlay type in useOverlayDrawing:",
+            overlayInteractionState.type
+          );
+          newOverlay = newOverlayBase;
+        }
+
         console.log(
-          "Adding new overlay (absolute original coords):",
+          `Adding new ${newOverlay.type} overlay (absolute original coords):`,
           newOverlay
         );
         setOverlays((prev) => [...prev, newOverlay]);
@@ -111,6 +135,9 @@ export function useOverlayDrawing({
 
       setCurrentRect(null);
       setOverlayInteractionState({ active: false, type: null, step: null });
+      if (setLastInteractionEndTime) {
+        setLastInteractionEndTime(Date.now());
+      }
     },
     [
       isDrawing,
@@ -120,6 +147,7 @@ export function useOverlayDrawing({
       setOverlayInteractionState,
       displayScale,
       crop,
+      setLastInteractionEndTime,
     ]
   );
 

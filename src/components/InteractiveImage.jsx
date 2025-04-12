@@ -17,6 +17,8 @@ const InteractiveImage = () => {
     const [selectedFilter, setSelectedFilter] = useState("None")
     const [adjustments, setAdjustments] = useState(initialAdjustments);
     const [overlayInteractionState, setOverlayInteractionState] = useState({ active: false, type: null, step: null });
+    const [selectedOverlayId, setSelectedOverlayId] = useState(null);
+    const [lastInteractionEndTime, setLastInteractionEndTime] = useState(0);    // We need this so letting go of the mouse button when creating an overlay box does not trigger a click to open the file upload dialog
     const containerRef = useRef(null);
 
     const [overlays, setOverlays] = useState([]);
@@ -91,6 +93,10 @@ const InteractiveImage = () => {
         setAdjustments,
         overlays,
         setOverlays,
+        selectedOverlayId,
+        setSelectedOverlayId,
+        lastInteractionEndTime,
+        setLastInteractionEndTime,
         overlayInteractionState,
         setOverlayInteractionState,
         format: exportManager.format,
@@ -117,6 +123,8 @@ const InteractiveImage = () => {
         crop, isCropping, aspectRatio, setAspectRatio, cropRounding, setCropRounding, lockAspectRatio, setLockAspectRatio, startCroppingSession, handleConfirmCrop, handleCancelCrop,
         selectedFilter, setSelectedFilter, adjustments, setAdjustments,
         overlays, setOverlays, overlayInteractionState, setOverlayInteractionState,
+        selectedOverlayId, setSelectedOverlayId,
+        lastInteractionEndTime,
         exportManager
     ]);
 

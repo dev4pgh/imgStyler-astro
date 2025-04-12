@@ -38,7 +38,6 @@ export function applyBlurOverlay(
   const drawY = Math.round(relY * scaleY);
   const drawWidth = Math.round(absWidth * scaleX);
   const drawHeight = Math.round(absHeight * scaleY);
-  // const drawIntensity = Math.max(1, baseIntensity * Math.sqrt(scaleX * scaleY));
 
   if (
     drawX + drawWidth <= 0 ||
@@ -77,7 +76,6 @@ export function applyBlurOverlay(
     }
 
     try {
-      // Calculate the intersection rectangle on the TARGET canvas
       const intersectX = Math.max(0, drawX);
       const intersectY = Math.max(0, drawY);
       const intersectWidth = Math.max(
@@ -95,16 +93,12 @@ export function applyBlurOverlay(
         return;
       }
 
-      // Get data from the intersection area on the main canvas
       const imageData = ctx.getImageData(
         intersectX,
         intersectY,
         intersectWidth,
         intersectHeight
       );
-
-      // Calculate where to put this data onto the temp canvas
-      // (relative to temp canvas origin)
       const tempDestX = intersectX - drawX;
       const tempDestY = intersectY - drawY;
       tempCtx.putImageData(imageData, tempDestX, tempDestY);
@@ -131,45 +125,4 @@ export function applyBlurOverlay(
   } finally {
     ctx.restore();
   }
-}
-
-export function applyAllOverlays(
-  ctx,
-  overlays = [],
-  currentCrop,
-  scaleFactors = { scaleX: 1, scaleY: 1 }
-) {
-  if (!ctx || !overlays || overlays.length === 0 || !currentCrop) {
-    return;
-  }
-  const scaleX =
-    scaleFactors && scaleFactors?.scaleX > 0 ? scaleFactors.scaleX : 1;
-  const scaleY =
-    scaleFactors && scaleFactors?.scaleY > 0 ? scaleFactors.scaleY : 1;
-
-  console.log(
-    `Applying ${overlays.length} overlays relative to crop:`,
-    currentCrop,
-    `with scales:`,
-    { scaleX, scaleY }
-  );
-
-  overlays.forEach((overlay) => {
-    try {
-      switch (overlay.type) {
-        case "blur":
-          applyBlurOverlay(ctx, overlay, currentCrop, scaleX, scaleY);
-          break;
-        default:
-          console.warn(`Unsupported overlay type: ${overlay.type}`);
-      }
-    } catch (error) {
-      console.error(
-        `Error applying overlay (ID: ${overlay.id || "N/A"}, Type: ${
-          overlay.type
-        }):`,
-        error
-      );
-    }
-  });
 }

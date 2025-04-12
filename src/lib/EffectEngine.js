@@ -1,5 +1,6 @@
 import * as UTIF from "utif";
-import { applyAllOverlays } from "./overlays/blurUtils";
+import { applyBlurOverlay } from "./overlays/blurUtils";
+import { applyTextOverlay } from "./overlays/textUtils";
 
 export const filterMap = {
   None: "",
@@ -202,6 +203,48 @@ const applyTemperatureAndTint = (ctx, canvas, temperature, tint) => {
   }
   ctx.putImageData(imageData, 0, 0);
 };
+
+function applyAllOverlays(
+  ctx,
+  overlays = [],
+  currentCrop,
+  scaleFactors = { scaleX: 1, scaleY: 1 }
+) {
+  if (!ctx || !overlays || overlays.length === 0 || !currentCrop) {
+    return;
+  }
+  const scaleX = scaleFactors?.scaleX > 0 ? scaleFactors.scaleX : 1;
+  const scaleY = scaleFactors?.scaleY > 0 ? scaleFactors.scaleY : 1;
+
+  console.log(
+    `Applying ${overlays.length} overlays relative to crop:`,
+    currentCrop,
+    `with scales:`,
+    { scaleX, scaleY }
+  );
+
+  overlays.forEach((overlay) => {
+    try {
+      switch (overlay.type) {
+        case "blur":
+          applyBlurOverlay(ctx, overlay, currentCrop, scaleX, scaleY);
+          break;
+        case "text":
+          applyTextOverlay(ctx, overlay, currentCrop, scaleX, scaleY);
+          break;
+        default:
+          console.warn(`Unsupported overlay type: ${overlay.type}`);
+      }
+    } catch (error) {
+      console.error(
+        `Error applying overlay (ID: ${overlay.id || "N/A"}, Type: ${
+          overlay.type
+        }):`,
+        error
+      );
+    }
+  });
+}
 
 export const applyAllEffects = (
   ctx,
