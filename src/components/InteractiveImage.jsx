@@ -260,6 +260,24 @@ const InteractiveImage = () => {
                     <div className="flex-1 overflow-y-auto">
                         <Sidebar />
                     </div>
+                    {isCropping && (
+                        <div className="fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 shadow-t p-3 md:hidden">
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={confirmCrop}
+                                    className="flex-1 bg-green-500 text-white py-2 rounded hover:bg-green-600 text-sm"
+                                >
+                                    Confirm Crop
+                                </button>
+                                <button
+                                    onClick={cancelCrop}
+                                    className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 text-sm"
+                                >
+                                    Cancel Crop
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </EditingProvider>

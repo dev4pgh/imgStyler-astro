@@ -6,7 +6,9 @@ const OverlaysPanel = () => {
     const context = useEditingContext();
     if (!context) {
         return (
-            <div className="p-2 text-sm text-gray-500 dark:text-gray-400">Loading...</div>
+            <div className="p-2 text-sm text-gray-500 dark:text-gray-400">
+                Loading...
+            </div>
         );
     }
     const {
@@ -56,17 +58,27 @@ const OverlaysPanel = () => {
         <div className="p-2 space-y-4">
             <div className="flex gap-2">
                 <button
-                    title={isCropping ? "Confirm or cancel crop first" : "Draw a new blur region"}
+                    title={
+                        isCropping
+                            ? "Finish cropping before adding a new overlay"
+                            : "Draw a new blur region"
+                    }
                     onClick={() => startOverlayDraw("blur")}
-                    className={`flex-1 bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded text-sm ${isAddDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded text-sm ${isAddDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     disabled={isAddDisabled}
                 >
                     Add Blur
                 </button>
                 <button
-                    title={isCropping ? "Confirm or cancel crop first" : "Draw a new text box"}
+                    title={
+                        isCropping
+                            ? "Finish cropping before adding a new overlay"
+                            : "Draw a new text box"
+                    }
                     onClick={() => startOverlayDraw("text")}
-                    className={`flex-1 bg-teal-500 hover:bg-teal-600 text-white py-1.5 rounded text-sm ${isAddDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 bg-teal-500 hover:bg-teal-600 text-white py-1.5 rounded text-sm ${isAddDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     disabled={isAddDisabled}
                 >
                     Add Text
@@ -74,11 +86,19 @@ const OverlaysPanel = () => {
             </div>
 
             <div className="mt-3">
-                <h3 className={`text-sm font-medium ${isDisabled ? "text-gray-500 dark:text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Active Overlays ({overlays.length})
                 </h3>
-                <div className="mt-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700/50 overflow-y-auto">
-                    <ul className="space-y-3 px-2 py-1 sm:max-h-[calc(100vh-100px)] lg:max-h-[calc(60vh-300px)]">
+                {isCropping && (
+                    <div className="mt-1 p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded text-xs text-yellow-800 dark:text-yellow-200">
+                        Cropping is active — please confirm or cancel the crop to add or modify overlays.
+                    </div>
+                )}
+                <div
+                    className="mt-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700/50 overflow-y-auto"
+                    style={{ maxHeight: "calc(100vh - 150px)" }}
+                >
+                    <ul className="space-y-3 px-2 py-1 sm:max-h-[calc(100vh-150px)] md:max-h-[calc(100vh-300px)]">
                         {overlays.length === 0 && !isDisabled && (
                             <p className="text-xs text-gray-500 dark:text-gray-400 italic">
                                 No overlays added yet.
@@ -134,7 +154,9 @@ const OverlaysPanel = () => {
                                                 max="25"
                                                 step="1"
                                                 value={overlay.intensity}
-                                                onChange={(e) => updateBlurIntensity(overlay.id, e.target.value)}
+                                                onChange={(e) =>
+                                                    updateBlurIntensity(overlay.id, e.target.value)
+                                                }
                                                 className={`w-full accent-blue-500 cursor-pointer ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                                                 disabled={isDisabled}
                                                 aria-label={`Blur intensity for overlay ${index + 1}`}
@@ -150,7 +172,9 @@ const OverlaysPanel = () => {
                                                 </label>
                                                 <textarea
                                                     value={overlay.text}
-                                                    onChange={(e) => updateOverlayProperty(overlay.id, "text", e.target.value)}
+                                                    onChange={(e) =>
+                                                        updateOverlayProperty(overlay.id, "text", e.target.value)
+                                                    }
                                                     rows={2}
                                                     className={`w-full text-xs rounded px-2 py-1 border border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-400 ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                                                     disabled={isDisabled}
@@ -167,7 +191,9 @@ const OverlaysPanel = () => {
                                                         min="8"
                                                         step="1"
                                                         value={overlay.fontSize}
-                                                        onChange={(e) => updateFontSize(overlay.id, e.target.value)}
+                                                        onChange={(e) =>
+                                                            updateFontSize(overlay.id, e.target.value)
+                                                        }
                                                         className={`w-full text-xs rounded px-2 py-1 border border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-400 ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                                                         disabled={isDisabled}
                                                         aria-label={`Font size for overlay ${index + 1}`}
@@ -180,9 +206,10 @@ const OverlaysPanel = () => {
                                                     <input
                                                         type="color"
                                                         value={overlay.color}
-                                                        onChange={(e) => updateOverlayProperty(overlay.id, "color", e.target.value)}
-                                                        className={`w-full h-8 rounded border border-gray-300 dark:border-gray-500 ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-                                                            }`}
+                                                        onChange={(e) =>
+                                                            updateOverlayProperty(overlay.id, "color", e.target.value)
+                                                        }
+                                                        className={`w-full h-8 rounded border border-gray-300 dark:border-gray-500 ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                                                         disabled={isDisabled}
                                                         aria-label={`Text color for overlay ${index + 1}`}
                                                     />

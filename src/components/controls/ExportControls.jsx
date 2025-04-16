@@ -4,16 +4,33 @@ import { useEditingContext } from "../../context/EditingContext";
 
 const ExportControls = () => {
     const {
-        format, quality, lossless, isExporting,
-        setFormat, setQuality, setLossless,
+        format,
+        quality,
+        lossless,
+        isExporting,
+        setFormat,
+        setQuality,
+        setLossless,
         startExport,
-        originalImage, crop, selectedFilter, adjustments, cropRounding, file, hasImage,
+        originalImage,
+        crop,
+        selectedFilter,
+        adjustments,
+        cropRounding,
+        file,
+        hasImage,
         overlays,
-        enableResizing, setEnableResizing,
-        targetWidth, setTargetWidth,
-        targetHeight, setTargetHeight,
-        keepAspectRatio, setKeepAspectRatio,
+        enableResizing,
+        setEnableResizing,
+        targetWidth,
+        setTargetWidth,
+        targetHeight,
+        setTargetHeight,
+        keepAspectRatio,
+        setKeepAspectRatio,
+        isCropping
     } = useEditingContext();
+
     if (!hasImage) return null;
 
     const currentFormat = FORMAT_OPTIONS.find((f) => f.value === format);
@@ -25,7 +42,7 @@ const ExportControls = () => {
             return { w: originalImage.width, h: originalImage.height };
         }
         return null;
-    }
+    };
     const originalDims = getOriginalDims();
 
     const getFiletypeDisplay = () => {
@@ -80,6 +97,12 @@ const ExportControls = () => {
 
     return (
         <div className="p-4 bg-gray-200 dark:bg-gray-800 rounded-xl shadow-md mt-4 space-y-4">
+            {isCropping && (
+                <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded text-xs text-yellow-800 dark:text-yellow-200">
+                    Please confirm or cancel the crop before exporting.
+                </div>
+            )}
+
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Export Format:
@@ -103,7 +126,7 @@ const ExportControls = () => {
                     {originalDims && file && ' | '}
                     {file && `Type: ${getFiletypeDisplay()}`}
                     <br />
-                    {crop && `Current Crop Size: ${Math.round(crop.width)}  x ${Math.round(crop.height)} px`}
+                    {crop && `Current Crop Size: ${Math.round(crop.width)} x ${Math.round(crop.height)} px`}
                 </div>
             )}
 
@@ -114,7 +137,7 @@ const ExportControls = () => {
                         type="checkbox"
                         checked={enableResizing}
                         onChange={(e) => setEnableResizing(e.target.checked)}
-                        className="mr-2 h-4 w-4 rounnded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                        className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
                         disabled={isExporting}
                     />
                     <label htmlFor="enableResize" className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -210,11 +233,15 @@ const ExportControls = () => {
             )}
 
             <button
-                className={`w-full text-white py-2 rounded-lg transition shadow-sm ${isExporting ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                className={`w-full text-white py-2 rounded-lg transition shadow-sm ${isExporting || isCropping
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                    }`}
                 onClick={handleExportClick}
-                disabled={isExporting}
+                disabled={isExporting || isCropping}
+                title={isCropping ? "Finish cropping before exporting" : ""}
             >
-                {isExporting ? 'Exporting...' : 'Download Edited Image'}
+                {isExporting ? "Exporting..." : "Download Edited Image"}
             </button>
         </div>
     );

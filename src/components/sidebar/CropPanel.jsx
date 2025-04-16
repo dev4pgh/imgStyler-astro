@@ -54,17 +54,28 @@ const CropPanel = () => {
         }
     };
 
-    const handleRoundingChange = (e) => { const value = parseInt(e.target.value, 10); setCropRounding(Math.max(0, Math.min(50, value || 0))); };
-    const handleRoundingInputChange = (e) => { const value = parseInt(e.target.value, 10); setCropRounding(Math.max(0, Math.min(50, value || 0))); };
+    const handleRoundingChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        setCropRounding(Math.max(0, Math.min(50, value || 0)));
+    };
+    const handleRoundingInputChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        setCropRounding(Math.max(0, Math.min(50, value || 0)));
+    };
 
     const controlsDisabled = !hasImage;
     const roundingDisabled = !isCropping || !hasImage;
     const lockDisabled = !isCropping || !hasImage || aspectRatio === null;
     const customRatioDisabled = (lockAspectRatio && aspectRatio !== null) || !hasImage;
 
-
     return (
         <div className="space-y-4">
+            {!isCropping && (
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                    Select a preset, freeform, or custom ratio to begin cropping.
+                </p>
+            )}
+
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Presets</p>
             <div className="flex flex-wrap gap-2">
                 {cropPresets.map((preset) => (
@@ -86,7 +97,9 @@ const CropPanel = () => {
                 </button>
             </div>
             <div className="flex items-center gap-2">
-                <span className={`text-sm ${customRatioDisabled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>Custom Ratio:</span>
+                <span className={`text-sm ${customRatioDisabled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                    Custom Ratio:
+                </span>
                 <input
                     type="number" step="0.1" min="0.1"
                     value={customRatioW}
@@ -95,7 +108,9 @@ const CropPanel = () => {
                     disabled={customRatioDisabled}
                     aria-label="Custom ratio width"
                 />
-                <span className={`text-sm ${customRatioDisabled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>:</span>
+                <span className={`text-sm ${customRatioDisabled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                    :
+                </span>
                 <input
                     type="number" step="0.1" min="0.1"
                     value={customRatioH}
@@ -107,7 +122,9 @@ const CropPanel = () => {
             </div>
             <div>
                 <div className="flex items-center justify-between mb-1">
-                    <label htmlFor="cropRoundingInput" className={`block text-sm font-medium ${roundingDisabled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>Crop Rounding (%)</label>
+                    <label htmlFor="cropRoundingInput" className={`block text-sm font-medium ${roundingDisabled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                        Crop Rounding (%)
+                    </label>
                     <input
                         type="number" min="0" max="50" step="1"
                         value={cropRounding}
@@ -125,32 +142,6 @@ const CropPanel = () => {
                     disabled={roundingDisabled}
                     aria-label="Crop rounding slider"
                 />
-            </div>
-            <div className="flex items-center">
-                <input
-                    id="lockAspect" type="checkbox"
-                    checked={lockAspectRatio}
-                    onChange={(e) => setLockAspectRatio(e.target.checked)}
-                    className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-blue-600 dark:ring-offset-gray-800 disabled:opacity-70 disabled:cursor-not-allowed"
-                    disabled={lockDisabled}
-                />
-                <label htmlFor="lockAspect" className={`text-sm ${lockDisabled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>Lock Aspect Ratio</label>
-            </div>
-            <div className="flex gap-2 pt-4 border-t border-gray-300 dark:border-gray-600">
-                <button
-                    onClick={confirmCrop}
-                    className="flex-1 bg-green-500 text-white py-2 rounded hover:bg-green-600 text-sm transition duration-150 ease-in-out disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-green-500"
-                    disabled={!isCropping}
-                >
-                    Confirm Crop
-                </button>
-                <button
-                    onClick={cancelCrop}
-                    className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 text-sm transition duration-150 ease-in-out disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-red-500"
-                    disabled={!isCropping}
-                >
-                    Cancel Crop
-                </button>
             </div>
         </div>
     );
